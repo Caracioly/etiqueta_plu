@@ -1,0 +1,5 @@
+# sqlite3 
+# tkinter
+# win32print
+pandas
+pywin32
