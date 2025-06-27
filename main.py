@@ -1,6 +1,7 @@
 from tkinter import ttk, messagebox
 import tkinter as tk
 import win32print
+import atualizar_cadastro
 import queries
 
 
@@ -23,6 +24,7 @@ class EtiquetaApp:
             return []
 
     def _build_ui(self):
+        self.root.configure(bg="#f9f9f9")
         ttk.Label(self.root, text="Nome do Produto:").grid(
             row=0,
             column=0,
@@ -38,6 +40,7 @@ class EtiquetaApp:
             side="left",
             padx=(5, 0),
         )
+        self.entry_nome.configure(background="#ffffff")
 
         ttk.Label(self.root, text="Código de Barras:").grid(
             row=1, column=0, sticky="e", padx=5, pady=5
@@ -91,6 +94,13 @@ class EtiquetaApp:
         )
         self.printer_combobox.grid(row=5, column=1, sticky="we", padx=1, pady=5)
 
+        ttk.Button(
+            self.root,
+            text="Atualizar Cadastros",
+            command=self.atualizar_banco,
+            style="Atualizar.TButton",
+        ).grid(row=7, column=0, padx=2, pady=10)
+
         printers_list = self._get_printers()
         if printers_list:
             self.printer_combobox["values"] = printers_list
@@ -104,7 +114,10 @@ class EtiquetaApp:
                 self.printer_combobox.current(0)
 
         ttk.Button(
-            self.root, text="Imprimir Etiquetas", command=self.imprimir_etiquetas
+            self.root,
+            text="Imprimir Etiquetas",
+            command=self.imprimir_etiquetas,
+            style="Imprimir.TButton",
         ).grid(row=6, column=1, pady=15, sticky="w")
 
         self.root.resizable(False, False)
@@ -189,7 +202,7 @@ class EtiquetaApp:
             self.entry_nome.delete(0, tk.END)
             self.entry_nome.insert(0, desc)
             self.entry_ean.delete(0, tk.END)
-            if ean == "nan":
+            if ean == "nan" or ean is None or ean == "None":
                 self.entry_ean.delete(0, tk.END)
             else:
                 self.entry_ean.insert(0, ean)
@@ -220,17 +233,33 @@ class EtiquetaApp:
             self.entry_plu.delete(0, tk.END)
             self.entry_plu.insert(0, plu)
             self.entry_ean.delete(0, tk.END)
-            if ean == "nan":
+            if ean == "nan" or ean is None or ean == "None":
                 self.entry_ean.delete(0, tk.END)
             else:
                 self.entry_ean.insert(0, ean)
         else:
             messagebox.showinfo("Erro", "Produto não encontrado.")
 
+    def atualizar_banco(self):
+        atualizar_cadastro.atualizar_banco(self)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     style = ttk.Style(root)
-    style.theme_use("clam")
     app = EtiquetaApp(root)
+    style = ttk.Style()
+    style.theme_use("clam")
+
+    style.configure("Atualizar.TButton", background="#f0ad4e", foreground="black")
+    style.map("Atualizar.TButton",
+        background=[("active", "#ec971f")],
+        foreground=[("active", "white")]
+    )
+
+    style.configure("Imprimir.TButton", background="#15a038", foreground="black")
+    style.map("Imprimir.TButton",
+        background=[("active", "#118a31")],
+        foreground=[("active", "white")]
+    )
     root.mainloop()

@@ -1,0 +1,11 @@
+/build
+/dist
+/etiqueta_plu
+/__pycache__
+*.spec
+*.xls
+*.pyc
+*.pyo
+*.db
+.venv/
+venv/

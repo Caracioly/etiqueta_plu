@@ -1,5 +1,7 @@
+# pip install -r .\requirements.txt
 # sqlite3 
 # tkinter
 # win32print
 pandas
 pywin32
+pyinstaller
