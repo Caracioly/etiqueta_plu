@@ -1,7 +1,10 @@
 from tkinter import ttk, messagebox
 import tkinter as tk
 import win32print
+
 import atualizar_cadastro
+import tipos.tipo_deposito as tipo_deposito
+import tipos.tipo_plu as tipo_plu
 import queries
 
 
@@ -72,18 +75,17 @@ class EtiquetaApp:
         self.entry_qtd.insert(0, 1)
         self.entry_qtd.grid(row=3, column=1, sticky="w", padx=1, pady=5)
 
-        self.tipo_var = tk.StringVar(value="plu")
-        ttk.Label(self.root, text="Tipo de Código:").grid(
+        ttk.Label(self.root, text="Tipo de Etiqueta:").grid(
             row=4, column=0, sticky="e", padx=5, pady=5
         )
-        frame_radio = ttk.Frame(self.root)
-        frame_radio.grid(row=4, column=1, sticky="w", padx=5, pady=5)
-        ttk.Radiobutton(
-            frame_radio, text="PLU", variable=self.tipo_var, value="plu"
-        ).pack(side="left", padx=5)
-        ttk.Radiobutton(
-            frame_radio, text="EAN", variable=self.tipo_var, value="barcode"
-        ).pack(side="left", padx=5)
+        self.tipo_var = tk.StringVar(value="Etiqueta Código Interno")
+        self.tipo_combobox = ttk.Combobox(
+            self.root,
+            textvariable=self.tipo_var,
+            state="readonly",
+            values=["Etiqueta Código Interno", "Etiqueta Deposito"],
+        )
+        self.tipo_combobox.grid(row=4, column=1, sticky="we", padx=1, pady=5)
 
         ttk.Label(self.root, text="Impressora:").grid(
             row=5, column=0, sticky="e", padx=5, pady=5
@@ -113,43 +115,42 @@ class EtiquetaApp:
             except Exception:
                 self.printer_combobox.current(0)
 
-        ttk.Button(
+        self.botao_imprimir = ttk.Button(
             self.root,
             text="Imprimir Etiquetas",
             command=self.imprimir_etiquetas,
             style="Imprimir.TButton",
-        ).grid(row=6, column=1, pady=15, sticky="w")
+        )
+        self.botao_imprimir.grid(row=6, column=1, pady=15, sticky="w")
 
         self.root.resizable(False, False)
 
-    def gerar_linha_zpl(self, descricao, codigo, qtd_na_linha, tipo):
-        posicoes = [(30, 50), (330, 50), (600, 50)]
-        zpl = "^XA"
-        for i in range(qtd_na_linha):
-            x_desc, y = posicoes[i]
-            x_bar = x_desc + 7
-            x_txt = x_desc + 45
-            zpl += "^CF0,15"
-            zpl += f"^FO{x_desc},{y}^FD{descricao}^FS"
-            zpl += "^BY1.8,2,60"
-            if tipo == "plu":
-                zpl += f"^FO{x_bar},{y + 30}^BCN,60,Y,N,N^FD{codigo}^FS"
-            else:
-                zpl += f"^FO{x_bar},{y + 30}^BCN,60,Y,N,N^FD{codigo}^FS"
-            zpl += "^CF0,15"
-            zpl += f"^FO{x_txt},{y + 135}^FDSUPER SOMAR LTDA^FS"
-        zpl += "^XZ"
-        return zpl
+        self.entry_nome.bind("<Return>", lambda event: self._acao_enter("nome"))
+        self.entry_ean.bind("<Return>", lambda event: self._acao_enter("ean"))
+        self.entry_plu.bind("<Return>", lambda event: self._acao_enter("plu"))
+        self.botao_imprimir.bind("<Return>", lambda event: self.imprimir_etiquetas())
 
-    def gerar_zpl_multiplo(self, nome, codigo, qtd_total, tipo):
-        zpl_final = ""
-        while qtd_total > 0:
-            qtd_na_linha = min(3, qtd_total)
-            zpl_final += self.gerar_linha_zpl(nome, codigo, qtd_na_linha, tipo)
-            qtd_total -= qtd_na_linha
-        return zpl_final
+        for widget in [
+            self.entry_nome,
+            self.entry_ean,
+            self.entry_plu,
+            self.entry_qtd,
+            self.printer_combobox,
+        ]:
+            widget.bind("<Up>", self.mover_foco_com_setas)
+            widget.bind("<Down>", self.mover_foco_com_setas)
+
+        self.entry_nome.focus_set()
+
+        self.foco_anterior = None
+
+        for widget in [self.entry_nome, self.entry_ean, self.entry_plu]:
+            widget.bind("<FocusIn>", lambda e, w=widget: self._registrar_foco(w))
+
+        # fim da UI
 
     def imprimir_etiquetas(self):
+        self.focus_anterior = self.foco_anterior
         tipo = self.tipo_var.get()
         nome = self.entry_nome.get().strip().upper()
         plu = self.entry_plu.get().strip()
@@ -170,28 +171,17 @@ class EtiquetaApp:
             messagebox.showerror("Erro", "Quantidade inválida.")
             return
 
-        codigo = plu if tipo == "plu" else ean
-        if not codigo:
-            messagebox.showerror(
-                "Erro", f"O código {'PLU' if tipo == 'plu' else 'EAN'} está vazio."
-            )
-            return
+        if tipo == "Etiqueta Código Interno":
+            tipo_plu.imprimir_etiqueta(nome, plu, qtd, printer_name)
+        else:
+            tipo_deposito.imprimir_etiqueta(nome, ean, qtd, printer_name)
 
-        zpl_final = self.gerar_zpl_multiplo(nome, codigo, qtd, tipo)
+        self.entry_nome.delete(0, tk.END)
+        self.entry_ean.delete(0, tk.END)
+        self.entry_plu.delete(0, tk.END)
 
-        try:
-            hPrinter = win32print.OpenPrinter(printer_name)
-            win32print.StartDocPrinter(hPrinter, 1, ("Etiquetas em Lote", None, "RAW"))
-            win32print.StartPagePrinter(hPrinter)
-            win32print.WritePrinter(hPrinter, zpl_final.encode("utf-8"))
-            win32print.EndPagePrinter(hPrinter)
-            win32print.EndDocPrinter(hPrinter)
-            win32print.ClosePrinter(hPrinter)
-            messagebox.showinfo(
-                "Sucesso", f"{qtd} etiqueta(s) enviada(s) para: {printer_name}"
-            )
-        except Exception as e:
-            messagebox.showerror("Erro ao imprimir", str(e))
+        if self.foco_anterior:
+            self.root.after(100, self.foco_anterior.focus_set)
 
     def buscar_por_plu(self):
         plu = self.entry_plu.get().strip()
@@ -225,7 +215,7 @@ class EtiquetaApp:
             messagebox.showinfo("Erro", "Produto não encontrado.")
 
     def buscar_por_nome(self):
-        nome = self.entry_nome.get().strip()
+        nome = self.entry_nome.get().strip().upper()
         if not nome:
             return
         plu, ean = queries.buscar_com_descricao(nome)
@@ -243,6 +233,39 @@ class EtiquetaApp:
     def atualizar_banco(self):
         atualizar_cadastro.atualizar_banco(self)
 
+    def _registrar_foco(self, widget):
+        self.foco_anterior = widget
+
+    def mover_foco_com_setas(self, event):
+        widgets = [
+            self.entry_nome,
+            self.entry_ean,
+            self.entry_plu,
+        ]
+        current = event.widget
+        if current not in widgets:
+            return
+
+        idx = widgets.index(current)
+        if event.keysym == "Down":
+            next_idx = (idx + 1) % len(widgets)
+        elif event.keysym == "Up":
+            next_idx = (idx - 1) % len(widgets)
+        else:
+            return
+
+        widgets[next_idx].focus_set()
+
+    def _acao_enter(self, campo):
+        if campo == "nome":
+            self.buscar_por_nome()
+        elif campo == "ean":
+            self.buscar_por_ean()
+        elif campo == "plu":
+            self.buscar_por_plu()
+
+        self.botao_imprimir.focus_set()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -252,14 +275,16 @@ if __name__ == "__main__":
     style.theme_use("clam")
 
     style.configure("Atualizar.TButton", background="#f0ad4e", foreground="black")
-    style.map("Atualizar.TButton",
+    style.map(
+        "Atualizar.TButton",
         background=[("active", "#ec971f")],
-        foreground=[("active", "white")]
+        foreground=[("active", "white")],
     )
 
     style.configure("Imprimir.TButton", background="#15a038", foreground="black")
-    style.map("Imprimir.TButton",
+    style.map(
+        "Imprimir.TButton",
         background=[("active", "#118a31")],
-        foreground=[("active", "white")]
+        foreground=[("active", "white")],
     )
     root.mainloop()
