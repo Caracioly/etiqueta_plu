@@ -173,7 +173,7 @@ class EtiquetaApp:
             widget.bind("<Up>", self.mover_foco_com_setas)
             widget.bind("<Down>", self.mover_foco_com_setas)
 
-        self.entry_nome.focus_set()
+        self.entry_pesquisa.focus_set()
 
         self.foco_anterior = None
 
@@ -217,7 +217,9 @@ class EtiquetaApp:
             self.root.after(100, self.foco_anterior.focus_set)
 
     def buscar_por_plu(self):
-        plu = self.entry_plu.get().strip()
+        plu = self.entry_plu.get().strip().replace("-", "")
+        self.entry_plu.delete(0, tk.END)
+        self.entry_plu.insert(0, plu)
         if not plu:
             return
         desc, ean = queries.buscar_com_plu(plu)
@@ -233,7 +235,9 @@ class EtiquetaApp:
             messagebox.showinfo("Erro", "Produto não encontrado.")
 
     def buscar_por_ean(self):
-        ean = self.entry_ean.get().strip()
+        ean = self.entry_ean.get().strip().replace("-", "")
+        self.entry_ean.delete(0, tk.END)
+        self.entry_ean.insert(0, ean)
         if len(ean) < 13:
             ean = ean.zfill(13)
         if not ean:
@@ -249,6 +253,8 @@ class EtiquetaApp:
 
     def buscar_por_nome(self):
         nome = self.entry_nome.get().strip().upper()
+        self.entry_nome.delete(0, tk.END)
+        self.entry_nome.insert(0, nome)
         if not nome:
             return
         plu, ean = queries.buscar_com_descricao(nome)

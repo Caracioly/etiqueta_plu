@@ -6,7 +6,11 @@ def atualizar_banco(self):
     import sys
 
     try:
-        base_dir = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(__file__)
+        base_dir = (
+            os.path.dirname(sys.executable)
+            if getattr(sys, "frozen", False)
+            else os.path.dirname(__file__)
+        )
         xls_path = os.path.join(base_dir, "list_cadastro_produto.xls")
         db_path = os.path.join(base_dir, "banco.db")
 
@@ -19,7 +23,13 @@ def atualizar_banco(self):
         df["estc13codi"] = df["estc13codi"].str[1:]
 
         conn = sqlite3.connect(db_path)
-        df.to_sql("cad_produtos", conn, if_exists="replace", index=False, dtype={"estc13codi": "TEXT"})
+        df.to_sql(
+            "cad_produtos",
+            conn,
+            if_exists="replace",
+            index=False,
+            dtype={"estc13codi": "TEXT"},
+        )
         conn.close()
 
         messagebox.showinfo("Sucesso", "Banco atualizado com sucesso.")
