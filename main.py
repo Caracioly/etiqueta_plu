@@ -2,15 +2,18 @@ from tkinter import ttk, messagebox
 import tkinter as tk
 import win32print
 
+from assets import icones
 import atualizar_cadastro
 import tipos.tipo_deposito as tipo_deposito
 import tipos.tipo_plu as tipo_plu
 import queries
+import pesquisa
 
 
 class EtiquetaApp:
     def __init__(self, root):
         self.root = root
+        self.icones = icones.carregar_icones()
         self.root.title("Impressão de Etiquetas")
         self._build_ui()
 
@@ -28,55 +31,70 @@ class EtiquetaApp:
 
     def _build_ui(self):
         self.root.configure(bg="#f9f9f9")
+
+        ttk.Label(self.root, text="Pesquisar Produto:").grid(
+            row=0, column=0, sticky="e", padx=5, pady=5
+        )
+        frame_pesquisa = ttk.Frame(self.root)
+        frame_pesquisa.grid(row=0, column=1, sticky="we", padx=1, pady=5)
+        self.entry_pesquisa = ttk.Entry(frame_pesquisa)
+        self.entry_pesquisa.pack(side="left", fill="x", expand=True)
+        ttk.Button(
+            frame_pesquisa,
+            image=self.icones["lupa"],
+            command=lambda: pesquisa.abrir_tela_pesquisa(
+                self.root,
+                self.entry_pesquisa.get(),
+                lambda plu, ean, nome: (
+                    self.entry_plu.delete(0, tk.END),
+                    self.entry_plu.insert(0, plu),
+                    self.entry_ean.delete(0, tk.END),
+                    self.entry_ean.insert(0, ean),
+                    self.entry_nome.delete(0, tk.END),
+                    self.entry_nome.insert(0, nome),
+                ),
+            ),
+        ).pack(side="left", padx=(5, 0))
+
         ttk.Label(self.root, text="Nome do Produto:").grid(
-            row=0,
+            row=1,
             column=0,
             sticky="e",
             padx=5,
             pady=5,
         )
         frame_nome = ttk.Frame(self.root)
-        frame_nome.grid(row=0, column=1, sticky="we", padx=1, pady=5)
+        frame_nome.grid(row=1, column=1, sticky="we", padx=1, pady=5)
         self.entry_nome = ttk.Entry(frame_nome)
         self.entry_nome.pack(side="left", fill="x", expand=True)
-        ttk.Button(frame_nome, text="🔍", command=self.buscar_por_nome).pack(
-            side="left",
-            padx=(5, 0),
-        )
         self.entry_nome.configure(background="#ffffff")
 
         ttk.Label(self.root, text="Código de Barras:").grid(
-            row=1, column=0, sticky="e", padx=5, pady=5
-        )
-        frame_ean = ttk.Frame(self.root)
-        frame_ean.grid(row=1, column=1, sticky="we", padx=1, pady=5)
-        self.entry_ean = ttk.Entry(frame_ean)
-        self.entry_ean.pack(side="left", fill="x", expand=True)
-        ttk.Button(frame_ean, text="🔍", command=self.buscar_por_ean).pack(
-            side="left", padx=(5, 0)
-        )
-
-        ttk.Label(self.root, text="Código PLU:").grid(
             row=2, column=0, sticky="e", padx=5, pady=5
         )
+        frame_ean = ttk.Frame(self.root)
+        frame_ean.grid(row=2, column=1, sticky="we", padx=1, pady=5)
+        self.entry_ean = ttk.Entry(frame_ean)
+        self.entry_ean.pack(side="left", fill="x", expand=True)
+
+        ttk.Label(self.root, text="Código PLU:").grid(
+            row=3, column=0, sticky="e", padx=5, pady=5
+        )
         frame_plu = ttk.Frame(self.root)
-        frame_plu.grid(row=2, column=1, sticky="we", padx=1, pady=5)
+        frame_plu.grid(row=3, column=1, sticky="we", padx=1, pady=5)
         self.entry_plu = ttk.Entry(frame_plu)
         self.entry_plu.pack(side="left", fill="x", expand=True)
-        ttk.Button(frame_plu, text="🔍", command=self.buscar_por_plu).pack(
-            side="left", padx=(5, 0)
-        )
 
         ttk.Label(self.root, text="Quantidade:").grid(
-            row=3, column=0, sticky="e", padx=5, pady=5
+            row=4, column=0, sticky="e", padx=5, pady=5
         )
         self.entry_qtd = ttk.Spinbox(self.root, from_=1, to=1000, width=7)
         self.entry_qtd.delete(0, tk.END)
         self.entry_qtd.insert(0, 1)
-        self.entry_qtd.grid(row=3, column=1, sticky="w", padx=1, pady=5)
+        self.entry_qtd.grid(row=4, column=1, sticky="w", padx=1, pady=5)
 
         ttk.Label(self.root, text="Tipo de Etiqueta:").grid(
-            row=4, column=0, sticky="e", padx=5, pady=5
+            row=5, column=0, sticky="e", padx=5, pady=5
         )
         self.tipo_var = tk.StringVar(value="Etiqueta Código Interno")
         self.tipo_combobox = ttk.Combobox(
@@ -85,23 +103,31 @@ class EtiquetaApp:
             state="readonly",
             values=["Etiqueta Código Interno", "Etiqueta Deposito"],
         )
-        self.tipo_combobox.grid(row=4, column=1, sticky="we", padx=1, pady=5)
+        self.tipo_combobox.grid(row=5, column=1, sticky="we", padx=1, pady=5)
 
         ttk.Label(self.root, text="Impressora:").grid(
-            row=5, column=0, sticky="e", padx=5, pady=5
+            row=6, column=0, sticky="e", padx=5, pady=5
         )
         self.printer_var = tk.StringVar()
         self.printer_combobox = ttk.Combobox(
             self.root, textvariable=self.printer_var, state="readonly"
         )
-        self.printer_combobox.grid(row=5, column=1, sticky="we", padx=1, pady=5)
+        self.printer_combobox.grid(row=6, column=1, sticky="we", padx=1, pady=5)
+
+        self.botao_imprimir = ttk.Button(
+            self.root,
+            text="Imprimir Etiquetas",
+            command=self.imprimir_etiquetas,
+            style="Imprimir.TButton",
+        )
+        self.botao_imprimir.grid(row=7, column=1, pady=15, sticky="w")
 
         ttk.Button(
             self.root,
             text="Atualizar Cadastros",
             command=self.atualizar_banco,
             style="Atualizar.TButton",
-        ).grid(row=7, column=0, padx=2, pady=10)
+        ).grid(row=8, column=0, padx=2, pady=10)
 
         printers_list = self._get_printers()
         if printers_list:
@@ -115,20 +141,27 @@ class EtiquetaApp:
             except Exception:
                 self.printer_combobox.current(0)
 
-        self.botao_imprimir = ttk.Button(
-            self.root,
-            text="Imprimir Etiquetas",
-            command=self.imprimir_etiquetas,
-            style="Imprimir.TButton",
-        )
-        self.botao_imprimir.grid(row=6, column=1, pady=15, sticky="w")
-
         self.root.resizable(False, False)
 
         self.entry_nome.bind("<Return>", lambda event: self._acao_enter("nome"))
         self.entry_ean.bind("<Return>", lambda event: self._acao_enter("ean"))
         self.entry_plu.bind("<Return>", lambda event: self._acao_enter("plu"))
         self.botao_imprimir.bind("<Return>", lambda event: self.imprimir_etiquetas())
+        self.entry_pesquisa.bind(
+            "<Return>",
+            lambda event: pesquisa.abrir_tela_pesquisa(
+                self.root,
+                self.entry_pesquisa.get(),
+                lambda plu, ean, nome: (
+                    self.entry_plu.delete(0, tk.END),
+                    self.entry_plu.insert(0, plu),
+                    self.entry_ean.delete(0, tk.END),
+                    self.entry_ean.insert(0, ean),
+                    self.entry_nome.delete(0, tk.END),
+                    self.entry_nome.insert(0, nome),
+                ),
+            ),
+        )
 
         for widget in [
             self.entry_nome,

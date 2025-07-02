@@ -6,3 +6,4 @@ pandas
 pywin32
 pyinstaller
 xlrd
+pillow

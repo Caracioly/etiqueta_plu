@@ -38,3 +38,29 @@ def buscar_com_descricao(desc):
     if resultado:
         return str(resultado[0]), str(resultado[1])
     return None, None
+
+
+def buscar_varias_descricao(termos):
+    conn = sqlite3.connect("banco.db")
+    cursor = conn.cursor()
+
+    condicoes = []
+    parametros = []
+    for termo in termos:
+        if termo.startswith("%"):
+            condicoes.append("estc35desc LIKE ?")
+            parametros.append(f"%{termo[1:]}%")
+        else:
+            condicoes.append("estc35desc LIKE ?")
+            parametros.append(f"{termo}%")
+
+    query = f"""
+        SELECT codigoplu, estc13codi, estc35desc
+        FROM cad_produtos
+        WHERE {" AND ".join(condicoes)}
+    """
+
+    cursor.execute(query, parametros)
+    resultados = cursor.fetchall()
+    conn.close()
+    return resultados
