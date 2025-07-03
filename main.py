@@ -9,6 +9,10 @@ import tipos.tipo_plu as tipo_plu
 import queries
 import pesquisa
 
+import sys
+import os
+
+base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
 class EtiquetaApp:
     def __init__(self, root):

@@ -1,8 +1,8 @@
 def atualizar_banco(self):
     from tkinter import messagebox
-    import os
     import pandas as pd
     import sqlite3
+    import os
     import sys
 
     try:
