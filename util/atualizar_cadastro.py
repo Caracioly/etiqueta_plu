@@ -12,7 +12,7 @@ def atualizar_banco(self):
             else os.path.dirname(__file__)
         )
         xls_path = os.path.join(base_dir, "list_cadastro_produto.xls")
-        db_path = os.path.join(base_dir, "banco.db")
+        db_path = os.path.join(base_dir, "etiquetas.db")
 
         df = pd.read_excel(
             xls_path,
@@ -34,4 +34,4 @@ def atualizar_banco(self):
 
         messagebox.showinfo("Sucesso", "Banco atualizado com sucesso.")
     except Exception as e:
-        messagebox.showerror("Erro", f"Falha ao atualizar o banco:\n{e}")
+        messagebox.showerror("Erro", f"Falha ao atualizar o banco de dados:\n{e}")
