@@ -2,7 +2,7 @@ import sqlite3
 
 
 def buscar_com_plu(plu):
-    conn = sqlite3.connect("banco.db")
+    conn = sqlite3.connect("etiquetas.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT estc35desc, estc13codi FROM cad_produtos WHERE codigoplu = ?", (plu,)
@@ -15,7 +15,7 @@ def buscar_com_plu(plu):
 
 
 def buscar_com_ean(ean):
-    conn = sqlite3.connect("banco.db")
+    conn = sqlite3.connect("etiquetas.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT estc35desc, codigoplu FROM cad_produtos WHERE estc13codi = ?", (ean,)
@@ -28,7 +28,7 @@ def buscar_com_ean(ean):
 
 
 def buscar_com_descricao(desc):
-    conn = sqlite3.connect("banco.db")
+    conn = sqlite3.connect("etiquetas.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT codigoplu, estc13codi FROM cad_produtos WHERE estc35desc = ?", (desc,)
@@ -41,7 +41,7 @@ def buscar_com_descricao(desc):
 
 
 def buscar_varias_descricao(termos):
-    conn = sqlite3.connect("banco.db")
+    conn = sqlite3.connect("etiquetas.db")
     cursor = conn.cursor()
 
     condicoes = []

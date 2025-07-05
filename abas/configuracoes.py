@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog
 from tkinter import messagebox
 
 import queries
+import util.atualizar_cadastro as banco
 
 
 class Configuracoes(ttk.Frame):
@@ -28,9 +29,17 @@ class Configuracoes(ttk.Frame):
         )
         botao_selecionar.pack(side="right", padx=(45, 0))
 
+        botao_atualizar_banco = ttk.Button(
+            frame_caminho,
+            text="Atualizar Banco de Dados",
+            command=self._atualizar_banco_de_dados,
+        )
+        botao_atualizar_banco.pack()
+
     def _selecionar_caminho(self):
-        caminho = filedialog.askdirectory(
-            title="Diretório do list_cadastro_produto.xls"
+        caminho = filedialog.askopenfilename(
+            title="Selecionar list_cadastro_produto.xls",
+            filetypes=[("Planilhas Excel", "*.xls *.xlsx")],
         )
         if caminho:
             self.caminho_xls.set(caminho)
@@ -41,3 +50,6 @@ class Configuracoes(ttk.Frame):
     def _salvar_caminho(self):
         queries.salvar_caminho_xls(self.caminho_xls.get())
         messagebox.showinfo("Salvo", "Caminho salvo com sucesso.")
+
+    def _atualizar_banco_de_dados(self):
+        banco.atualizar_banco(self.caminho_xls.get())

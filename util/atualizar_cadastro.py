@@ -1,4 +1,4 @@
-def atualizar_banco(self):
+def atualizar_banco(diretorio):
     from tkinter import messagebox
     import pandas as pd
     import sqlite3
@@ -9,13 +9,13 @@ def atualizar_banco(self):
         base_dir = (
             os.path.dirname(sys.executable)
             if getattr(sys, "frozen", False)
-            else os.path.dirname(__file__)
+            else os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         )
-        xls_path = os.path.join(base_dir, "list_cadastro_produto.xls")
+
         db_path = os.path.join(base_dir, "etiquetas.db")
 
         df = pd.read_excel(
-            xls_path,
+            diretorio,
             usecols=[0, 1, 2],
             names=["codigoplu", "estc13codi", "estc35desc"],
             dtype={"estc13codi": str},

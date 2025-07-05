@@ -7,6 +7,7 @@ import tkinter as tk
 from util import icones
 from abas.impressao import Impressao as Aba_Impressao
 from abas.configuracoes import Configuracoes as Aba_Configuracoes
+from abas.impressao_massa import ImpressaoMassa as Aba_ImpressaoMassa
 import db.iniciar as db
 
 base_dir = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +28,8 @@ class EtiquetasApp:
         self.db = db.iniciar_banco_de_dados()
 
     def _definir_logo(self):
-        icon_path = os.path.join(base_dir, "assets", "logo.ico")
+        icon_path = os.path.join(base_dir, "imagens", "logo.ico")
+        print(icon_path)
         if os.path.exists(icon_path):
             self.root.iconbitmap(icon_path)
 
@@ -38,15 +40,15 @@ class EtiquetasApp:
         style.configure("Atualizar.TButton", background="#f0ad4e", foreground="black")
         style.map("Atualizar.TButton", background=[("active", "#ec971f")])
 
-        style.configure("Imprimir.TButton", background="#15a038", foreground="black")
-        style.map("Imprimir.TButton", background=[("active", "#118a31")])
-
     def _construir_interface_principal(self):
         abas = ttk.Notebook(self.root)
         abas.pack(pady=10, padx=10, fill="both", expand=True)
 
         aba_impressao = Aba_Impressao(abas, self.icones)
         abas.add(aba_impressao, text="Impressão")
+
+        aba_envio_massa = Aba_ImpressaoMassa(abas, self.icones)
+        abas.add(aba_envio_massa, text="Impressão em Massa")
 
         aba_configuracoes = Aba_Configuracoes(abas)
         abas.add(aba_configuracoes, text="Configurações")

@@ -80,10 +80,10 @@ class Impressao(ttk.Frame):
             self, textvariable=self.printer_var, state="readonly"
         )
         self.seletor_impressora.grid(row=6, column=1, sticky="we", padx=1, pady=5)
-
+        
         self.botao_imprimir = ttk.Button(
             self,
-            text="Imprimir Etiquetas",
+            image=self.icones["impressora"],
             command=self.imprimir_etiquetas,
             style="Imprimir.TButton",
         )

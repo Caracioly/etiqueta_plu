@@ -2,7 +2,7 @@ from tkinter import messagebox
 import win32print
 
 
-def imprimir_etiqueta(nome, ean, qtd, printer_name):
+def imprimir_etiqueta(nome, ean, qtd, printer_name, modo):
     zpl_data = gerar_zpl(nome, ean)
     try:
         printer = win32print.OpenPrinter(printer_name)
@@ -13,9 +13,11 @@ def imprimir_etiqueta(nome, ean, qtd, printer_name):
             win32print.WritePrinter(printer, zpl_data.encode())
             win32print.EndPagePrinter(printer)
             win32print.EndDocPrinter(printer)
-            messagebox.showinfo(
-                "Sucesso", f"{qtd} etiqueta(s) enviada(s) para: {printer_name}"
-            )
+
+            if modo != "massa":
+                messagebox.showinfo(
+                    "Sucesso", f"{qtd} etiqueta(s) enviada(s) para: {printer_name}"
+                )
     except Exception as error:
         messagebox.showerror("Erro ao imprimir: ", str(error))
     finally:
