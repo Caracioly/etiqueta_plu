@@ -67,31 +67,40 @@ class ImpressaoMassa(ttk.Frame):
             return
 
         try:
-            df = pd.read_excel(caminho)
-            codigos = df.iloc[:, 0].dropna().astype(str).tolist()
+            df = pd.read_excel(caminho, dtype=str)
+            codigos = df.iloc[:, 0]
+            quantidades = df.iloc[:, 1]
+
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao ler arquivo:\n{e}", parent=self)
             return
 
-        self._processar_codigos(codigos)
+        self._processar_codigos(codigos, quantidades)
 
-    def _processar_codigos(self, codigos):
+    def _processar_codigos(self, codigos, quantidades):
         self.codigos_processados.clear()
         self.codigos_nao_encontrados.clear()
 
-        for codigo in codigos:
+        for codigo, qtd_str in zip(codigos, quantidades):
+            try:
+                qtd = int(qtd_str)
+            except (ValueError, TypeError):
+                qtd = 1
+
+            codigo = str(codigo).strip()
+
             if len(codigo) > 6:
                 desc, plu = queries.buscar_com_ean(codigo.zfill(13))
                 if desc:
                     self.codigos_processados.append(
-                        ("ean", codigo.zfill(13), desc, plu)
+                        ("ean", codigo.zfill(13), desc, plu, qtd)
                     )
                 else:
                     self.codigos_nao_encontrados.append(codigo)
             else:
                 desc, ean = queries.buscar_com_plu(codigo)
                 if desc:
-                    self.codigos_processados.append(("plu", codigo, desc, ean))
+                    self.codigos_processados.append(("plu", codigo, desc, ean, qtd))
                 else:
                     self.codigos_nao_encontrados.append(codigo)
 
@@ -116,13 +125,15 @@ class ImpressaoMassa(ttk.Frame):
             messagebox.showerror("Erro", "Nenhuma impressora selecionada.", parent=self)
             return
 
-        for tipo_codigo, cod, desc, outro in self.codigos_processados:
+        for tipo_codigo, cod, desc, outro, qtd in self.codigos_processados:
             if tipo == "Etiqueta Código Interno":
                 plu = cod if tipo_codigo == "plu" else outro
-                tipo_plu.imprimir_etiqueta(desc, plu, 1, impressora, modo="massa")
+                tipo_plu.imprimir_etiqueta(desc, plu, qtd, impressora, modo="massa")
             else:
                 ean = cod if tipo_codigo == "ean" else outro
-                tipo_deposito.imprimir_etiqueta(desc, ean, 1, impressora, modo="massa")
+                tipo_deposito.imprimir_etiqueta(
+                    desc, ean, qtd, impressora, modo="massa"
+                )
 
             time.sleep(0.1)
 

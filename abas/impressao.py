@@ -52,16 +52,21 @@ class Impressao(ttk.Frame):
         self.entrada_plu = ttk.Entry(self)
         self.entrada_plu.grid(row=3, column=1, sticky="we", padx=1, pady=5)
 
+        self.columnconfigure(1, weight=1)
+        ttk.Separator(self, orient="horizontal").grid(
+            row=4, column=0, columnspan=2, sticky="ew", pady=10, padx=10
+        )
+
         ttk.Label(self, text="Quantidade:").grid(
-            row=4, column=0, sticky="e", padx=5, pady=5
+            row=5, column=0, sticky="e", padx=5, pady=5
         )
         self.entry_qtd = ttk.Spinbox(self, from_=1, to=1000, width=7)
         self.entry_qtd.delete(0, tk.END)
         self.entry_qtd.insert(0, 1)
-        self.entry_qtd.grid(row=4, column=1, sticky="w", padx=1, pady=5)
+        self.entry_qtd.grid(row=5, column=1, sticky="w", padx=1, pady=5)
 
         ttk.Label(self, text="Tipo de Etiqueta:").grid(
-            row=5, column=0, sticky="e", padx=5, pady=5
+            row=6, column=0, sticky="e", padx=5, pady=5
         )
         self.tipo_etiqueta = tk.StringVar(value="Etiqueta Código Interno")
         self.tipo_etiqueta_seletor = ttk.Combobox(
@@ -70,24 +75,24 @@ class Impressao(ttk.Frame):
             state="readonly",
             values=["Etiqueta Código Interno", "Etiqueta Deposito"],
         )
-        self.tipo_etiqueta_seletor.grid(row=5, column=1, sticky="we", padx=1, pady=5)
+        self.tipo_etiqueta_seletor.grid(row=6, column=1, sticky="we", padx=1, pady=5)
 
         ttk.Label(self, text="Impressora:").grid(
-            row=6, column=0, sticky="e", padx=5, pady=5
+            row=7, column=0, sticky="e", padx=5, pady=5
         )
         self.printer_var = tk.StringVar()
         self.seletor_impressora = ttk.Combobox(
             self, textvariable=self.printer_var, state="readonly"
         )
-        self.seletor_impressora.grid(row=6, column=1, sticky="we", padx=1, pady=5)
-        
+        self.seletor_impressora.grid(row=7, column=1, sticky="we", padx=1, pady=5)
+
         self.botao_imprimir = ttk.Button(
             self,
             image=self.icones["impressora"],
             command=self.imprimir_etiquetas,
             style="Imprimir.TButton",
         )
-        self.botao_imprimir.grid(row=7, column=1, pady=15, sticky="w")
+        self.botao_imprimir.grid(row=8, column=1, pady=15, sticky="w")
 
     def _vincular_eventos(self):
         self.entrada_nome.bind("<Return>", lambda e: self._acao_enter("nome"))
@@ -151,9 +156,9 @@ class Impressao(ttk.Frame):
             return
 
         if tipo_etiqueta == "Etiqueta Código Interno":
-            tipo_plu.imprimir_etiqueta(nome, plu, qtd, printer_name)
+            tipo_plu.imprimir_etiqueta(nome, plu, qtd, printer_name, modo="normal")
         else:
-            tipo_deposito.imprimir_etiqueta(nome, ean, qtd, printer_name)
+            tipo_deposito.imprimir_etiqueta(nome, ean, qtd, printer_name, modo="normal")
 
         self.entrada_nome.delete(0, tk.END)
         self.entrada_ean.delete(0, tk.END)

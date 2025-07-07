@@ -11,6 +11,7 @@ class Configuracoes(ttk.Frame):
         super().__init__(parent)
 
         self.caminho_xls = tk.StringVar(value=queries.obter_caminho_xls())
+
         self._construir_interface_configuracoes()
 
     def _construir_interface_configuracoes(self):
@@ -18,25 +19,25 @@ class Configuracoes(ttk.Frame):
             row=0, column=0, sticky="w", padx=5, pady=10
         )
 
-        frame_caminho = ttk.Frame(self)
-        frame_caminho.grid(row=1, column=0, sticky="we", padx=5)
+        frame_caminho_xls = ttk.Frame(self)
+        frame_caminho_xls.grid(row=1, column=0, sticky="we", padx=5)
 
-        entrada_caminho = ttk.Entry(frame_caminho, textvariable=self.caminho_xls)
+        entrada_caminho = ttk.Entry(frame_caminho_xls, textvariable=self.caminho_xls)
         entrada_caminho.pack(fill="x", expand=True)
 
-        botao_selecionar = ttk.Button(
-            frame_caminho, text="Selecionar", command=self._selecionar_caminho
+        botao_selecionar_caminho_xls = ttk.Button(
+            frame_caminho_xls, text="Selecionar", command=self._selecionar_caminho_xls
         )
-        botao_selecionar.pack(side="right", padx=(45, 0))
+        botao_selecionar_caminho_xls.pack(side="right", padx=(45, 0))
 
         botao_atualizar_banco = ttk.Button(
-            frame_caminho,
+            frame_caminho_xls,
             text="Atualizar Banco de Dados",
             command=self._atualizar_banco_de_dados,
         )
         botao_atualizar_banco.pack()
 
-    def _selecionar_caminho(self):
+    def _selecionar_caminho_xls(self):
         caminho = filedialog.askopenfilename(
             title="Selecionar list_cadastro_produto.xls",
             filetypes=[("Planilhas Excel", "*.xls *.xlsx")],

@@ -17,6 +17,8 @@ class EtiquetasApp:
     def __init__(self, root):
         self.root = root
 
+        self.db = db.iniciar_banco_de_dados()
+
         self._definir_logo()
         self.icones = icones.carregar_icones()
 
@@ -25,11 +27,8 @@ class EtiquetasApp:
         self._configurar_estilos()
         self._construir_interface_principal()
 
-        self.db = db.iniciar_banco_de_dados()
-
     def _definir_logo(self):
         icon_path = os.path.join(base_dir, "imagens", "logo.ico")
-        print(icon_path)
         if os.path.exists(icon_path):
             self.root.iconbitmap(icon_path)
 

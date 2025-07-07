@@ -12,11 +12,9 @@ def carregar_icones():
 
     diretorio_imagens = os.path.join(diretorio_base, "imagens")
 
-    # lupa
     caminho_lupa = os.path.join(diretorio_imagens, "lupa.png")
     lupa_img = Image.open(caminho_lupa).resize((16, 16), Image.LANCZOS)
 
-    # impressora
     caminho_impressora = os.path.join(diretorio_imagens, "impressora.png")
     impressora_img = Image.open(caminho_impressora).resize((32, 32), Image.LANCZOS)
 
