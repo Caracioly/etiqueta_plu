@@ -80,9 +80,9 @@ class Impressao(ttk.Frame):
         ttk.Label(self, text="Impressora:").grid(
             row=7, column=0, sticky="e", padx=5, pady=5
         )
-        self.printer_var = tk.StringVar()
+        self.impressora = tk.StringVar()
         self.seletor_impressora = ttk.Combobox(
-            self, textvariable=self.printer_var, state="readonly"
+            self, textvariable=self.impressora, state="readonly"
         )
         self.seletor_impressora.grid(row=7, column=1, sticky="we", padx=1, pady=5)
 
@@ -137,7 +137,7 @@ class Impressao(ttk.Frame):
         plu = self.entrada_plu.get().strip()
         ean = self.entrada_ean.get().strip()
         tipo_etiqueta = self.tipo_etiqueta.get()
-        printer_name = self.printer_var.get()
+        printer_name = self.impressora.get()
 
         if not printer_name:
             messagebox.showerror("Erro", "Nenhuma impressora selecionada.", parent=self)

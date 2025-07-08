@@ -6,8 +6,9 @@ import tkinter as tk
 
 from util import icones
 from abas.impressao import Impressao as Aba_Impressao
-from abas.configuracoes import Configuracoes as Aba_Configuracoes
 from abas.impressao_massa import ImpressaoMassa as Aba_ImpressaoMassa
+from abas.etiqueta_personalizada import Aba_EtiquetaPersonalizada
+from abas.configuracoes import Configuracoes as Aba_Configuracoes
 import db.iniciar as db
 
 base_dir = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
@@ -48,6 +49,9 @@ class EtiquetasApp:
 
         aba_envio_massa = Aba_ImpressaoMassa(abas, self.icones)
         abas.add(aba_envio_massa, text="Impressão em Massa")
+
+        aba_personalizada = Aba_EtiquetaPersonalizada(abas)
+        abas.add(aba_personalizada, text="Etiqueta Personalizada")
 
         aba_configuracoes = Aba_Configuracoes(abas)
         abas.add(aba_configuracoes, text="Configurações")

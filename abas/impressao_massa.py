@@ -38,9 +38,9 @@ class ImpressaoMassa(ttk.Frame):
         self.tipo_etiqueta_seletor.pack(pady=5)
 
         ttk.Label(self, text="Impressora:").pack()
-        self.printer_var = tk.StringVar()
+        self.impressora = tk.StringVar()
         self.seletor_impressora = ttk.Combobox(
-            self, textvariable=self.printer_var, state="readonly"
+            self, textvariable=self.impressora, state="readonly"
         )
         self.seletor_impressora.pack(pady=5)
 
@@ -119,7 +119,7 @@ class ImpressaoMassa(ttk.Frame):
             return
 
         tipo = self.tipo_etiqueta.get()
-        impressora = self.printer_var.get()
+        impressora = self.impressora.get()
 
         if not impressora:
             messagebox.showerror("Erro", "Nenhuma impressora selecionada.", parent=self)
