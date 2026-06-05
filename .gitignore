@@ -3,6 +3,7 @@
 /etiqueta_plu
 /__pycache__
 *.spec
+!main.spec
 *.xls
 *.pyc
 *.pyo

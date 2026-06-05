@@ -5,6 +5,7 @@ import win32print
 def imprimir_etiqueta(nome, plu, qtd, printer_name, modo):
     zpl_final = gerar_zpl_multiplo(nome, plu, qtd)
 
+    printer = None
     try:
         printer = win32print.OpenPrinter(printer_name)
         win32print.StartDocPrinter(printer, 1, ("Etiqueta PLU", None, "RAW"))

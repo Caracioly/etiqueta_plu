@@ -4,6 +4,7 @@ import win32print
 
 def imprimir_etiqueta(nome, ean, qtd, printer_name, modo):
     zpl_data = gerar_zpl(nome, ean)
+    printer = None
     try:
         printer = win32print.OpenPrinter(printer_name)
         job_info = ("Etiqueta Deposito", None, "RAW")

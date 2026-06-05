@@ -2,17 +2,11 @@ def atualizar_banco(diretorio):
     from tkinter import messagebox
     import pandas as pd
     import sqlite3
-    import os
-    import sys
+
+    from util.paths import caminho_banco
 
     try:
-        base_dir = (
-            os.path.dirname(sys.executable)
-            if getattr(sys, "frozen", False)
-            else os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        )
-
-        db_path = os.path.join(base_dir, "etiquetas.db")
+        db_path = caminho_banco()
 
         df = pd.read_excel(
             diretorio,

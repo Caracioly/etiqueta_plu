@@ -1,7 +1,6 @@
 import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import pandas as pd
 import queries
 
 import tipos.tipo_plu as tipo_plu
@@ -67,6 +66,8 @@ class ImpressaoMassa(ttk.Frame):
             return
 
         try:
+            import pandas as pd
+
             df = pd.read_excel(caminho, dtype=str)
             codigos = df.iloc[:, 0]
             quantidades = df.iloc[:, 1]

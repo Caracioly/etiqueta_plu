@@ -1,9 +1,10 @@
 import sys
 import os
 
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import tkinter as tk
 
+import queries
 from util import icones
 from abas.impressao import Impressao as Aba_Impressao
 from abas.impressao_massa import ImpressaoMassa as Aba_ImpressaoMassa
@@ -27,6 +28,17 @@ class EtiquetasApp:
 
         self._configurar_estilos()
         self._construir_interface_principal()
+        self._avisar_se_cadastro_vazio()
+
+    def _avisar_se_cadastro_vazio(self):
+        if queries.cadastro_vazio():
+            messagebox.showinfo(
+                "Cadastro vazio",
+                "Nenhum produto cadastrado ainda.\n\n"
+                "Va em Configuracoes, selecione o arquivo "
+                "list_cadastro_produto.xls e clique em "
+                '"Atualizar Banco de Dados".',
+            )
 
     def _definir_logo(self):
         icon_path = os.path.join(base_dir, "imagens", "logo.ico")

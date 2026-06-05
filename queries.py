@@ -1,8 +1,20 @@
 import sqlite3
 
+from util.paths import caminho_banco
+
+
+def cadastro_vazio():
+    """True se ainda nao ha produtos cadastrados (primeira execucao)."""
+    conn = sqlite3.connect(caminho_banco())
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM cad_produtos")
+    total = cursor.fetchone()[0]
+    conn.close()
+    return total == 0
+
 
 def buscar_com_plu(plu):
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
     cursor.execute(
         "SELECT estc35desc, estc13codi FROM cad_produtos WHERE codigoplu = ?", (plu,)
@@ -15,7 +27,7 @@ def buscar_com_plu(plu):
 
 
 def buscar_com_ean(ean):
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
     cursor.execute(
         "SELECT estc35desc, codigoplu FROM cad_produtos WHERE estc13codi = ?", (ean,)
@@ -28,7 +40,7 @@ def buscar_com_ean(ean):
 
 
 def buscar_com_descricao(desc):
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
     cursor.execute(
         "SELECT codigoplu, estc13codi FROM cad_produtos WHERE estc35desc = ?", (desc,)
@@ -41,7 +53,7 @@ def buscar_com_descricao(desc):
 
 
 def buscar_varias_descricao(termos):
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
 
     condicoes = []
@@ -67,7 +79,7 @@ def buscar_varias_descricao(termos):
 
 
 def obter_caminho_xls():
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
     cursor.execute("SELECT valor FROM configuracoes WHERE chave = ?", ("caminho_xls",))
     resultado = cursor.fetchone()
@@ -76,7 +88,7 @@ def obter_caminho_xls():
 
 
 def salvar_caminho_xls(caminho):
-    conn = sqlite3.connect("etiquetas.db")
+    conn = sqlite3.connect(caminho_banco())
     cursor = conn.cursor()
     cursor.execute(
         """

@@ -8,3 +8,4 @@ pyinstaller
 xlrd
 pillow
 openpyxl
+requests

@@ -117,6 +117,7 @@ class Aba_EtiquetaPersonalizada(ttk.Frame):
             messagebox.showerror("Erro", "ZPL ou impressora inválidos.")
             return
 
+        printer = None
         try:
             printer = win32print.OpenPrinter(printer_name)
             win32print.StartDocPrinter(
