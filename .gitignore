@@ -1,5 +1,6 @@
 /build
 /dist
+/dist_installer
 /etiqueta_plu
 /__pycache__
 *.spec
